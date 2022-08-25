@@ -53,12 +53,10 @@ def main():
       
         #acesso aos bytes recebidos
         for _ in range(10):
-            lenBuffer, nRx = com1.getData(1)
-            print(f"Recebendo {rxBuffer} bytes")
-            rxBuffer, nRx = com1.getData(rxBuffer[0])
-            com1.rx.clearBuffer()
-
-            print(f"comando =  {rxBuffer}")
+            sizeBuffer, nRx = com1.getData(1)
+            rxBuffer, nRx = com1.getData(sizeBuffer[0])
+            print(f"recebendo {rxBuffer} de {sizeBuffer[0]} bytes")
+            time.sleep(.1)
 
             
         com1.disable()
