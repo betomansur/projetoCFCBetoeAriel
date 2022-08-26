@@ -43,18 +43,35 @@ def main():
         time.sleep(.2)
         com1.sendData(b'00')
         time.sleep(1)
+        com1.getData(1)
+        time.sleep(.1)
+
+        com1.rx.clearBuffer()
+        time.sleep(.2)
 
 
         print("chegou no for")
-        for cmd in aleatorio():
+        cmds = aleatorio()
+        nCmds = len(cmds)
+        print(f"Iniciando envio de {nCmds} comandos")
+        for cmd in cmds:
             print(f"Enviando comando {cmd} de {len(cmd)} bytes")
             data = bytearray([len(cmd)])+cmd
             com1.sendData(np.asarray(data))
             time.sleep(.1)
-      
+        com1.sendData(bytearray([0]))
+        currTime = time.time()
+        while True:
+            if (time.time()- currTime)>5:
+                print("TIMEOUT. Resposta do server nao obtida")
+                break
+            if (com1.rx.getBufferLen()>0):
+                buffRx,nRx = com1.getData(1)
+                print(f"O server recebeu {buffRx[0]} comandos")
+                print(f"Este numero esta {'correto' if buffRx[0]==nCmds else 'incorreto'}")
+                break
+            time.sleep(.2)
 
-        print("Transmissão completa! O próximo passo é configurar a recepção de dados para o RX.")
-        
         # Encerra comunicação
         print("-------------------------")
         print("Comunicação encerrada")

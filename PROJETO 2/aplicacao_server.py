@@ -45,20 +45,24 @@ def main():
         time.sleep(.1)
 
         com1.rx.clearBuffer()
-        time.sleep(.1)
-  
-        print("Pronto pra receber")
+        time.sleep(.2)
+        com1.sendData(b'00')
+        time.sleep(1)
         #Será que todos os bytes enviados estão realmente guardadas? Será que conseguimos verificar?
         #Veja o que faz a funcao do enlaceRX  getBufferLen
       
         #acesso aos bytes recebidos
-        for _ in range(10):
+        cmds = 0
+        while True:
             sizeBuffer, nRx = com1.getData(1)
+            if (sizeBuffer[0]==0):
+                break
+            cmds+=1
             rxBuffer, nRx = com1.getData(sizeBuffer[0])
             print(f"recebendo {rxBuffer} de {sizeBuffer[0]} bytes")
             time.sleep(.1)
 
-            
+        com1.sendData(bytearray([cmds]))
         com1.disable()
         
     except Exception as erro:
