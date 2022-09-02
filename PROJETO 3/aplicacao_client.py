@@ -70,6 +70,7 @@ def main():
                 if pergunta == "N":
                     break
                 else:
+                    break
                     
             if (com1.rx.getBufferLen()>0):
                 buffRx,nRx = com1.getData(1)
