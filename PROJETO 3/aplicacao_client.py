@@ -50,6 +50,8 @@ def main():
         time.sleep(.2)
 
 
+
+
         cmds = aleatorio()
         nCmds = len(cmds)
         print(f"Iniciando envio de {nCmds} comandos")
@@ -60,10 +62,15 @@ def main():
             time.sleep(.1)
         com1.sendData(bytearray([0]))
         currTime = time.time()
+    
         while True:
             if (time.time()- currTime)>5:
                 print("TIMEOUT. Resposta do server nao obtida")
-                break
+                pergunta = input(str("Deve continuar?(S/N)"))
+                if pergunta == "N":
+                    break
+                else:
+                    
             if (com1.rx.getBufferLen()>0):
                 buffRx,nRx = com1.getData(1)
                 print(f"O server recebeu {buffRx[0]} comandos")

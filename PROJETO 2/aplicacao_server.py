@@ -61,7 +61,7 @@ def main():
             rxBuffer, nRx = com1.getData(sizeBuffer[0])
             print(f"recebendo {rxBuffer} de {sizeBuffer[0]} bytes")
             time.sleep(.1)
-
+        print(f"Enviando resposta, foram contados {cmds} comandos")
         com1.sendData(bytearray([cmds]))
         com1.disable()
         

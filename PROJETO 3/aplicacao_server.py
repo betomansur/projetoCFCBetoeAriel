@@ -12,8 +12,7 @@
 from enlace import *
 import time
 import numpy as np
-from aleatorio import aleatorio
-import sys
+
 # voce deverá descomentar e configurar a porta com através da qual ira fazer comunicaçao
 #   para saber a sua porta, execute no terminal :
 #   python -m serial.tools.list_ports
@@ -22,7 +21,7 @@ import sys
 #use uma das 3 opcoes para atribuir à variável a porta usada
 #serialName = "/dev/ttyACM0"           # Ubuntu (variacao de)
 #serialName = "/dev/tty.usbmodem1411" # Mac    (variacao de)
-serialName = "COM3"                  # Windows(variacao de)
+serialName = "COM4"                  # Windows(variacao de)
 
 
 def main():
@@ -39,50 +38,37 @@ def main():
         print("Comunicação aberta com sucesso! Vamos ao resto do projeto!")
         print("----------------------------------------------------------")
 
-            
-        time.sleep(.2)
-        com1.sendData(b'00')
-        time.sleep(1)
-        com1.getData(1)
+    
+        
+        print("esperando 1 byte de sacrifício")
+        rxBuffer, nRx = com1.getData(1)
         time.sleep(.1)
 
         com1.rx.clearBuffer()
         time.sleep(.2)
-
-
-        cmds = aleatorio()
-        nCmds = len(cmds)
-        print(f"Iniciando envio de {nCmds} comandos")
-        for cmd in cmds:
-            print(f"Enviando comando {cmd} de {len(cmd)} bytes")
-            data = bytearray([len(cmd)])+cmd
-            com1.sendData(np.asarray(data))
-            time.sleep(.1)
-        com1.sendData(bytearray([0]))
-        currTime = time.time()
+        com1.sendData(b'00')
+        time.sleep(1)
+        #Será que todos os bytes enviados estão realmente guardadas? Será que conseguimos verificar?
+        #Veja o que faz a funcao do enlaceRX  getBufferLen
+      
+        #acesso aos bytes recebidos
+        cmds = 0
         while True:
-            if (time.time()- currTime)>5:
-                print("TIMEOUT. Resposta do server nao obtida")
+            sizeBuffer, nRx = com1.getData(1)
+            if (sizeBuffer[0]==0):
                 break
-            if (com1.rx.getBufferLen()>0):
-                buffRx,nRx = com1.getData(1)
-                print(f"O server recebeu {buffRx[0]} comandos")
-                print(f"Este numero esta {'correto' if buffRx[0]==nCmds else 'incorreto'}")
-                break
-            time.sleep(.2)
-
-        # Encerra comunicação
-        print("-------------------------")
-        print("Comunicação encerrada")
-        print("-------------------------")
+            cmds+=1
+            rxBuffer, nRx = com1.getData(sizeBuffer[0])
+            print(f"recebendo {rxBuffer} de {sizeBuffer[0]} bytes")
+            time.sleep(.1)
+        print(f"Enviando resposta, foram contados {cmds} comandos")
+        #com1.sendData(bytearray([cmds]))
         com1.disable()
         
     except Exception as erro:
         print("ops! :-\\")
         print(erro)
         com1.disable()
-        sys.exit()
-        
         
 
     #so roda o main quando for executado do terminal ... se for chamado dentro de outro modulo nao roda
