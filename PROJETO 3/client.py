@@ -22,7 +22,7 @@ import sys
 #use uma das 3 opcoes para atribuir à variável a porta usada
 #serialName = "/dev/ttyACM0"           # Ubuntu (variacao de)
 #serialName = "/dev/tty.usbmodem1411" # Mac    (variacao de)
-serialName = "COM5"                  # Windows(variacao de)
+serialName = "COM3"                  # Windows(variacao de)
 
 
 def main(com1:enlace):
@@ -60,12 +60,13 @@ def main(com1:enlace):
     #Faz handhsake
     print("enviando handshale")
     handshakePacket = buildPacket(p_type=PacketType.HANDSHAKE)
+    print(handshakePacket)
     com1.sendData(handshakePacket);
     received_answer = False
     while not received_answer:
         try:
             print(com1.rx.getBufferLen())
-            verify_packet(getTimedData(14)[0],with_type=PacketType.ACK_HS)
+            verify_packet(getTimedData(14),with_type=PacketType.ACK_HS)
             print(com1.rx.getBufferLen())
             received_answer = True
             print("ACK received. Starting data transmission.")

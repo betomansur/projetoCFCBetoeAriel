@@ -44,8 +44,8 @@ def genDataRetrieval(com:enlace):
 		while True:
 			buffLen = com.rx.getBufferLen()
 			if buffLen>=length:
-				return com.getData(length)
-			if time.time() - date > 5:
+				return com.getData(length)[0]
+			if time.time() - date > timeout:
 				raise ComTimeoutError()
 			time.sleep(.1)
 	return getTimedData

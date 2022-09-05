@@ -23,7 +23,7 @@ from utils import *
 #use uma das 3 opcoes para atribuir à variável a porta usada
 #serialName = "/dev/ttyACM0"           # Ubuntu (variacao de)
 #serialName = "/dev/tty.usbmodem1411" # Mac    (variacao de)
-serialName = "COM6"                  # Windows(variacao de)
+serialName = "COM4"                  # Windows(variacao de)
 
 
 def main(com1:enlace):
@@ -56,29 +56,29 @@ def main(com1:enlace):
     verify_packet(handshake, with_type=PacketType.HANDSHAKE)
     print("received handshake")
     time.sleep(.1)
-    com1.sendData(buildPacket(p_type=PacketType.ACK_HS))
-    com1.disable()
+    ack_packet = buildPacket(p_type=PacketType.ACK_HS)
+    com1.sendData(ack_packet)
     packetCount = 1
-    totalPackets = None
+    totalPackets = 1
     rxBuffer = bytearray()
-    while packetCount != totalPackets:
+    ack_data  = buildPacket(p_type=PacketType.ACK_DATA)
+    while packetCount != totalPackets+1:
         try:
             head = getTimedData(10)
             payloadSize = head[1]
-            packetCountRec = int.from_bytes(head[3:7],byteorder="big")
-            totalPacketsRec = int.from_bytes(head[7:],byteorder="big")
-            print(totalPacketsRec)
+            packetCountRec = int.from_bytes(head[2:6],byteorder="big")
+            totalPackets = int.from_bytes(head[6:],byteorder="big")
+            print(head)
+            print(packetCountRec)
+            print(totalPackets)
             if packetCountRec!=packetCount:
                 raise InvalidPacket("wrong packet number")
-            if totalPackets == None:
-                totalPackets=totalPacketsRec
-            elif totalPackets != totalPacketsRec:
-                InvalidPacket("Wrong total packets")
+           
             payload = getTimedData(payloadSize)
             eop = getTimedData(4)
             packet = head+payload+eop
             verify_packet(packet, with_type=PacketType.DATA)
-            com1.sendData(PacketType.ACK_DATA)
+            com1.sendData(ack_data)
             packetCount+=1
             rxBuffer+=payload
         except (ComTimeoutError,InvalidPacket) as error:
@@ -87,9 +87,9 @@ def main(com1:enlace):
             time.sleep(.1)
             com1.rx.clearBuffer()
             time.sleep(.1)
-        with open(".img/copiaDevolvida.jpg",'wb') as f:
-            f.write(rxBuffer)
-        com1.disable()
+    with open("img/imgDevolvida.jpg","wb") as file:
+        file.write(rxBuffer)
+    com1.disable()
 
 
     #so roda o main quando for executado do terminal ... se for chamado dentro de outro modulo nao roda
