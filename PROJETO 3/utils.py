@@ -16,14 +16,13 @@ class PacketType(Enum):
 def buildPacket(payload=[],p_type=PacketType.DATA,n_packet=0,t_packets=0):
 	packet = buildHead(p_type,len(payload),n_packet,t_packets)
 	if p_type==PacketType.DATA:
-		packet+=payload
+		packet+=payload#+bytearray([1,2,3])
 	return packet+EOP
 	
 def buildHead(p_type:PacketType,payload_size=0,n_packet=0,t_packets=0):
 	return bytearray([p_type.value,payload_size])+int.to_bytes(n_packet,length=4,byteorder='big')+int.to_bytes(t_packets,length=4,byteorder='big')
 
 def verify_packet(packet:bytearray,*,with_type=None):
-	print(packet[0])
 	if packet[0]>4:
 		raise InvalidPacket("Invalid Packet Type")
 	if packet[-4:] != EOP:

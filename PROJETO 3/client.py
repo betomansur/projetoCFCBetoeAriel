@@ -22,7 +22,7 @@ import sys
 #use uma das 3 opcoes para atribuir à variável a porta usada
 #serialName = "/dev/ttyACM0"           # Ubuntu (variacao de)
 #serialName = "/dev/tty.usbmodem1411" # Mac    (variacao de)
-serialName = "COM3"                  # Windows(variacao de)
+serialName = "COM7"                  # Windows(variacao de)
 
 
 def main(com1:enlace):
@@ -45,7 +45,10 @@ def main(com1:enlace):
     time.sleep(1)
     print("aguardando byte de sacrificio")
 
-    com1.getData(1)
+    try:
+        getTimedData()
+    except ComTimeoutError:
+        print("TIMEOUT DO BYTE DO SACRIFICIO")
     time.sleep(.1)
 
     com1.rx.clearBuffer()
@@ -58,9 +61,8 @@ def main(com1:enlace):
     txBuffer = chunks(data,114)
 
     #Faz handhsake
-    print("enviando handshale")
+    print("enviando handshake")
     handshakePacket = buildPacket(p_type=PacketType.HANDSHAKE)
-    print(handshakePacket)
     com1.sendData(handshakePacket);
     received_answer = False
     while not received_answer:
@@ -73,15 +75,32 @@ def main(com1:enlace):
         except ComTimeoutError:
             if input("Timeout. No response from server. Do you want to try again?(Y/n)") == "n":
                 raise Exception("Terminated due to inactive server")
+                #Envia e recebe byte de sacrifcio
+            print("enviando byte de sacrificio")
+            time.sleep(.2)
+            com1.sendData(b'00')
+            try:
+                getTimedData()
+            except ComTimeoutError:
+                print("TIMEOUT DO BYTE DO SACRIFICIO")
+            time.sleep(.1)
+
+            com1.rx.clearBuffer()
+            time.sleep(.2)
+
+            com1.sendData(handshakePacket);
+    #A  A variaavel txBuffer e lazy entao o len precisa ser calculado.    
     totalPackages = len(data)//114
     if len(data)%114!=0: totalPackages+=1
     packetCount = 1
+    print(f"Starting data Transmission will send {totalPackages} packages")
     for imageChunk in txBuffer:
         gotAck = False
         while not gotAck:
             try:
+                # if packetCount==10:
+                #     packetCount+=1
                 packet = buildPacket(payload=imageChunk,n_packet=packetCount,t_packets=totalPackages)
-                print(packet[:11])
                 com1.sendData(packet)
                 answer = getTimedData(14)
                 verify_packet(answer,with_type=PacketType.ACK_DATA)
@@ -89,9 +108,12 @@ def main(com1:enlace):
                 packetCount+=1
             except ComTimeoutError:
                 print("Timeout awaiting for server. Trying again.")
+                com1.rx.clearBuffer()
             except InvalidPacket as error:
                 print("Invalid answer from server. Trying again.")
                 print(error)
+                com1.rx.clearBuffer()
+
 
     print("finished sending data")
 

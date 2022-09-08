@@ -23,7 +23,7 @@ from utils import *
 #use uma das 3 opcoes para atribuir à variável a porta usada
 #serialName = "/dev/ttyACM0"           # Ubuntu (variacao de)
 #serialName = "/dev/tty.usbmodem1411" # Mac    (variacao de)
-serialName = "COM4"                  # Windows(variacao de)
+serialName = "COM8"                  # Windows(variacao de)
 
 
 def main(com1:enlace):
@@ -68,9 +68,6 @@ def main(com1:enlace):
             payloadSize = head[1]
             packetCountRec = int.from_bytes(head[2:6],byteorder="big")
             totalPackets = int.from_bytes(head[6:],byteorder="big")
-            print(head)
-            print(packetCountRec)
-            print(totalPackets)
             if packetCountRec!=packetCount:
                 raise InvalidPacket("wrong packet number")
            
