@@ -129,16 +129,4 @@ def main(com1:enlace):
         
 
     #so roda o main quando for executado do terminal ... se for chamado dentro de outro modulo nao roda
-if __name__ == "__main__":
-    try:
-        com1 = enlace(serialName)
-        main(com1)
-    except KeyboardInterrupt:
-        com1.disable()
-        sys.exit()
-    except Exception as erro:
-        print("ops! :-\\")
-        print(erro)
-        com1.disable()
-        sys.exit()
-        
+ic

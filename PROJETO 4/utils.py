@@ -1,27 +1,29 @@
 from enum import Enum
 from struct import pack
-from enlace import enlace
+from enlace import *
 import time
-#     1-9      10-16         3-6         7-10
-#HEAD TYPE|PAYLOADSIZE|PACKET_N|TOTAL_PACKETS
+#       0    1-2         3        4             5					6				7		  8-9     
+#HEAD TYPE|  ** |TOTAL_PACKETS|PACKET_N|FILE_ID ou PAYLOADSIZE|PACKET_N_ERROR|LAST_PACKET_RECEIVED| ** | 
 
-EOP = b"\x00\xFF\x00\xFF"
+EOP = b"\xAA\xBB\xCC\xDD"
 class PacketType(Enum):
-	HANDSHAKE = 0
-	ACK_HS = 1
-	DATA = 2
-	ACK_DATA = 3
-	NO_ACK_DATA = 4
+	HANDSHAKE = 1
+	ACK_HS = 2
+	DATA = 3
+	ACK_DATA = 4
+	TIMEOUT = 5
+	NO_ACK_DATA = 6
 
-def buildPacket(payload=[],p_type=PacketType.DATA,n_packet=0,t_packets=0):
+
+
+def buildPacket(payload=[],p_type=PacketType.DATA,n_packet=0,t_packets=0,file_id=0,):
 	packet = buildHead(p_type,len(payload),n_packet,t_packets)
 	if p_type==PacketType.DATA:
 		packet+=payload#+bytearray([1,2,3])
 	return packet+EOP
 	
 def buildHead(p_type:PacketType,payload_size=0,n_packet=0,t_packets=0):
-	return bytearray([p_type.value,payload_size])+int.to_bytes(n_packet,length=4,byteorder='big')+int.to_bytes(t_packets,length=4,byteorder='big')
-
+	head = bytearray([p_type.value,0,0,t_packets])
 def verify_packet(packet:bytearray,*,with_type=None):
 	if packet[0]>4:
 		raise InvalidPacket("Invalid Packet Type")
@@ -45,12 +47,7 @@ def genDataRetrieval(com:enlace):
 			if buffLen>=length:
 				return com.getData(length)[0]
 			if time.time() - date > timeout:
-				raise ComTimeoutError()
+				raise PacketTimeoutError()
 			time.sleep(.1)
 	return getTimedData
 
-class ComTimeoutError(Exception):
-    pass
-
-class InvalidPacket(Exception):
-	pass
