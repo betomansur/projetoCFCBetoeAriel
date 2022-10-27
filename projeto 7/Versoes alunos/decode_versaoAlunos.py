@@ -76,7 +76,7 @@ def main():
     def findClosestX(peak):
         x = x_freqs[0]
         index = 0
-        delta = peak - x
+        delta = abs(peak - x)
         for i in range(1,len(x_freqs)):
             freq = x_freqs[i]
             t_delta = abs(peak - freq)
@@ -95,7 +95,7 @@ def main():
             t_delta = abs(peak-freq)
             if t_delta < delta:
                 delta = t_delta
-                x = freq
+                y = freq
                 index = i
         return y, index, delta
     x_peaks = []
