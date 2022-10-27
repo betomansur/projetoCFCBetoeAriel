@@ -98,10 +98,19 @@ def main():
                 x = freq
                 index = i
         return y, index, delta
-    x_peaks = 0
+    x_peaks = []
+    y_peaks = []
         
     for peak in peaks:
-        x_peaks
+        x_peaks.append(findClosestX(peak))
+        y_peaks.append(findClosestY(peak))
+    x_peak = min(x_peaks,key=lambda peak: peak[2])
+    y_peak = min(y_peaks,key=lambda peak: peak[2])
+    print(f"Picos corretos indenteificados: {x_peak[0]}, {y_peak[0]}")
+    print(f"numero transmitido {values[y_peak[1]][x_peak[1]]}")
+    
+
+
         
     
         
