@@ -26,7 +26,7 @@ def main():
     # os seguintes parametros devem ser setados:
     sd.default.samplerate = 44100
     sd.default.channels = 2#numCanais # o numero de canais, tipicamente são 2. Placas com dois canais. Se ocorrer problemas pode tentar com 1. No caso de 2 canais, ao gravar um audio, terá duas listas
-    duration =  2 # #tempo em segundos que ira aquisitar o sinal acustico captado pelo mic
+    duration =  2# #tempo em segundos que ira aquisitar o sinal acustico captado pelo mic
     
     #calcule o numero de amostras "numAmostras" que serao feitas (numero de aquisicoes) durante a gracação. Para esse cálculo você deverá utilizar a taxa de amostragem e o tempo de gravação
     numAmostras = duration * 44100
@@ -36,23 +36,23 @@ def main():
         print(f"a captacao comecará em {i} segundos")
         time.sleep(1)
     #Ao seguir, faca um print informando que a gravacao foi inicializada
-
+    print("gravacaco iniciada")
     #para gravar, utilize
-    audio = sd.rec(int(numAmostras), 44100, channels=1)
+    audio = sd.rec(int(numAmostras), 44100, channels=1)[:,0]
     sd.wait()
-    print("...     FIM")
+    print("print gravacao finalizada")
 
 
     #analise sua variavel "audio". pode ser um vetor com 1 ou 2 colunas, lista, isso dependerá so seu sistema, drivers etc...
     #extraia a parte que interessa da gravação (as amostras) gravando em uma variável "dados". Isso porque a variável audio pode conter dois canais e outas informações). 
-    print(audio)
     # use a funcao linspace e crie o vetor tempo. Um instante correspondente a cada amostra!
     t = np.linspace(0,duration,44100)
     # plot do áudio gravado (dados) vs tempo! Não plote todos os pontos, pois verá apenas uma mancha (freq altas) . 
        
     ## Calcule e plote o Fourier do sinal audio. como saida tem-se a amplitude e as frequencias
-    xf, yf = signal.calcFFT(audio[:,0], 44100)
-    signal.plotFFT(audio[:,0],44100)
+    xf, yf = signal.calcFFT(audio, 44100)
+    signal.plotFFT(audio,44100)
+    plt.show()
     #agora, voce tem os picos da transformada, que te informam quais sao as frequencias mais presentes no sinal. Alguns dos picos devem ser correspondentes às frequencias do DTMF!
     #Para descobrir a tecla pressionada, voce deve extrair os picos e compara-los à tabela DTMF
     #Provavelmente, se tudo deu certo, 2 picos serao PRÓXIMOS aos valores da tabela. Os demais serão picos de ruídos.
@@ -67,8 +67,44 @@ def main():
 
     #printe os picos encontrados! 
     # Aqui você deverá tomar o seguinte cuidado: A funcao  peakutils.indexes retorna as POSICOES dos picos. Não os valores das frequências onde ocorrem! Pense a respeito
-    
+    peaks = np.take(xf,index)
+
     #encontre na tabela duas frequencias proximas às frequencias de pico encontradas e descubra qual foi a tecla
+    x_freqs = [1209,1336,1477,1633]
+    y_freqs = [697,770,852,941]
+    values = [[1,2,3,None],[4,5,6,None],[7,8,9,None],[None,0,None,None]]
+    def findClosestX(peak):
+        x = x_freqs[0]
+        index = 0
+        delta = peak - x
+        for i in range(1,len(x_freqs)):
+            freq = x_freqs[i]
+            t_delta = peak - freq
+            if t_delta < delta:
+                delta = t_delta
+                x = freq
+                index = i
+        return x,index,delta
+            
+    def findClosestY(peak):
+        y = y_freqs[0]
+        index = 0
+        delta = peak - y
+        for freq in range(1,len(y_freqs)):
+            freq = y_freqs[i]
+            t_delta = peak-freq
+            if t_delta < delta:
+                delta = t_delta
+                x = freq
+                index = i
+        return y, index, delta
+    x_peaks = 0
+        
+    for peak in peaks:
+        x_peaks
+        
+    
+        
     #print o valor tecla!!!
     #Se acertou, parabens! Voce construiu um sistema DTMF
 
