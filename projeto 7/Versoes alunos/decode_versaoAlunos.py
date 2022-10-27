@@ -62,7 +62,7 @@ def main():
     # "thres" determina a sensibilidade da funcao, ou seja, quao elevado tem que ser o valor do pico para de fato ser considerado um pico
     #"min_dist" é relatico tolerancia. Ele determina quao próximos 2 picos identificados podem estar, ou seja, se a funcao indentificar um pico na posicao 200, por exemplo, só identificara outro a partir do 200+min_dis. Isso evita que varios picos sejam identificados em torno do 200, uma vez que todos sejam provavelmente resultado de pequenas variações de uma unica frequencia a ser identificada.   
     # Comece com os valores:
-    index = peakutils.indexes(yf, thres=0.4, min_dist=50)
+    index = peakutils.indexes(yf, thres=0.3, min_dist=50)
     print("index de picos {}" .format(index)) #yf é o resultado da transformada de fourier
 
     #printe os picos encontrados! 
@@ -79,7 +79,7 @@ def main():
         delta = peak - x
         for i in range(1,len(x_freqs)):
             freq = x_freqs[i]
-            t_delta = peak - freq
+            t_delta = abs(peak - freq)
             if t_delta < delta:
                 delta = t_delta
                 x = freq
@@ -89,10 +89,10 @@ def main():
     def findClosestY(peak):
         y = y_freqs[0]
         index = 0
-        delta = peak - y
+        delta = abs(peak - y)
         for freq in range(1,len(y_freqs)):
             freq = y_freqs[i]
-            t_delta = peak-freq
+            t_delta = abs(peak-freq)
             if t_delta < delta:
                 delta = t_delta
                 x = freq
