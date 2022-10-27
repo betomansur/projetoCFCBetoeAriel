@@ -90,7 +90,7 @@ def main():
         y = y_freqs[0]
         index = 0
         delta = abs(peak - y)
-        for freq in range(1,len(y_freqs)):
+        for i in range(1,len(y_freqs)):
             freq = y_freqs[i]
             t_delta = abs(peak-freq)
             if t_delta < delta:
