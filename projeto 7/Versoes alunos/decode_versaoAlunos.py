@@ -68,7 +68,7 @@ def main():
     #printe os picos encontrados! 
     # Aqui você deverá tomar o seguinte cuidado: A funcao  peakutils.indexes retorna as POSICOES dos picos. Não os valores das frequências onde ocorrem! Pense a respeito
     peaks = np.take(xf,index)
-
+    print(peaks)
     #encontre na tabela duas frequencias proximas às frequencias de pico encontradas e descubra qual foi a tecla
     x_freqs = [1209,1336,1477,1633]
     y_freqs = [697,770,852,941]
@@ -106,6 +106,9 @@ def main():
         y_peaks.append(findClosestY(peak))
     x_peak = min(x_peaks,key=lambda peak: peak[2])
     y_peak = min(y_peaks,key=lambda peak: peak[2])
+    print(x_peaks)
+    print(y_peaks)
+
     print(f"Picos corretos indenteificados: {x_peak[0]}, {y_peak[0]}")
     print(f"numero transmitido {values[y_peak[1]][x_peak[1]]}")
     
