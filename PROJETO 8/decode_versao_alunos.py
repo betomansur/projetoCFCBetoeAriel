@@ -22,6 +22,12 @@ def main():
     sd.play(audioFiltrado)
     sd.wait()
 
+    plt.plot(audioDemodulado,t)
+    plt.show()
+
+    plotFFT(audioDemodulado,fs)
+
+    plotFFT(audioFiltrado,fs)
 
 
 

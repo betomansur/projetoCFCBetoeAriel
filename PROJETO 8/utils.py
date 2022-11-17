@@ -26,7 +26,7 @@ def plotFFT( signal, fs):
     x,y = calcFFT(signal, fs)
     plt.plot(x, np.abs(y))
     plt.xticks(np.arange(min(x), max(x)+1, 2500))
-    plt.title('Fourier' if title is None else title)
+    plt.title('Fourier')
     plt.show()
 
 

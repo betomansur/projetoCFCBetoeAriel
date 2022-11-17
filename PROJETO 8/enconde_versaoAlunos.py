@@ -37,8 +37,9 @@ def main():
     print("nao filtrado")
     sd.play(yAudio)
     sd.wait()
-    yFiltrado = ut.LPF(yAudioNormalizado, 2200, samplerate)
+    yFiltrado = LPF(yAudioNormalizado, 2200, samplerate)
     print("filtrado")
+    
     plt.figure("tempo")
     plt.plot(yFiltrado)
     plt.grid()
